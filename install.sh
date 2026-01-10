@@ -9,26 +9,27 @@ echo "Installing Claude Code dotfiles..."
 # Create .claude directory
 mkdir -p ~/.claude
 
-# Copy statusline script
-cp "$SCRIPT_DIR/claude/statusline-command.sh" ~/.claude/
-chmod +x ~/.claude/statusline-command.sh
+# Copy pre-compiled statusline executable
+cp "$SCRIPT_DIR/claude/statusline-command" ~/.claude/
+chmod +x ~/.claude/statusline-command
+STATUSLINE_CMD="~/.claude/statusline-command"
 
 # Update settings.json with statusLine config
 if [ -f ~/.claude/settings.json ]; then
   # Merge statusLine into existing settings
   if command -v jq &> /dev/null; then
-    jq '.statusLine = {"type": "command", "command": "~/.claude/statusline-command.sh"}' \
+    jq --arg cmd "$STATUSLINE_CMD" '.statusLine = {"type": "command", "command": $cmd}' \
       ~/.claude/settings.json > /tmp/claude-settings.json && mv /tmp/claude-settings.json ~/.claude/settings.json
   else
     echo "Warning: jq not found, cannot merge settings. Please add statusLine config manually."
   fi
 else
   # Create new settings.json
-  cat > ~/.claude/settings.json << 'EOF'
+  cat > ~/.claude/settings.json << EOF
 {
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline-command.sh"
+    "command": "$STATUSLINE_CMD"
   }
 }
 EOF
