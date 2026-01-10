@@ -12,10 +12,16 @@ git_branch=$(cd "$cwd" 2>/dev/null && git branch --show-current 2>/dev/null || e
 # Extract model name
 model_name=$(echo "$input" | jq -r '.model.display_name')
 
-# Get lines changed
-lines_added=$(echo "$input" | jq '.cost.total_lines_added // 0')
-lines_removed=$(echo "$input" | jq '.cost.total_lines_removed // 0')
-lines_changed=$((lines_added + lines_removed))
+# Get lines changed from full transcript history (parse structuredPatch diffs)
+transcript_path=$(echo "$input" | jq -r '.transcript_path')
+if [ -f "$transcript_path" ]; then
+    diff_lines=$(cat "$transcript_path" | jq -r 'select(.toolUseResult.structuredPatch) | .toolUseResult.structuredPatch[].lines[]' 2>/dev/null)
+    lines_added=$(echo "$diff_lines" | grep -c '^\+' 2>/dev/null || echo 0)
+    lines_removed=$(echo "$diff_lines" | grep -c '^-' 2>/dev/null || echo 0)
+else
+    lines_added=0
+    lines_removed=0
+fi
 
 # Calculate token usage from current context (not cumulative)
 usage=$(echo "$input" | jq '.context_window.current_usage')
@@ -38,5 +44,5 @@ if [ "$usage" != "null" ]; then
     token_info="\033[38;5;216m${bar} ${current_k}k/${size_k}k tokens\033[0m"
 fi
 
-# Output: branch · model · context
+# Output: branch | +lines -lines | model | tokens (Catppuccin colors)
 printf "\033[38;5;111m%s\033[0m | \033[38;5;151m+%s\033[0m \033[38;5;211m-%s\033[0m | \033[38;5;183m%s\033[0m | %b" "$git_branch" "$lines_added" "$lines_removed" "$model_name" "$token_info"
