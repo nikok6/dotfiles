@@ -19,10 +19,12 @@ if [ -f "$transcript_path" ]; then
     tmpdir=$(mktemp -d)
 
     # Single jq pass: extract first originalFile for each unique filePath
+    # Also handle Write tool (new files) where originalFile is null but content exists
     jq -r '
         select(.toolUseResult | type == "object") |
-        select(.toolUseResult.filePath and .toolUseResult.originalFile) |
-        "\(.toolUseResult.filePath)\n\(.toolUseResult.originalFile)\n<<<END>>>"
+        select(.toolUseResult.filePath) |
+        select(.toolUseResult.originalFile or .toolUseResult.content) |
+        "\(.toolUseResult.filePath)\n\(.toolUseResult.originalFile // "")\n<<<END>>>"
     ' "$transcript_path" 2>/dev/null | while true; do
         IFS= read -r filepath || break
         original=""
