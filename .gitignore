@@ -1,5 +1,2 @@
-# Statusline binaries (distributed via GitHub Releases)
-claude/statusline-*
-
-# Rust build artifacts
-claude/target/
+# OS files
+.DS_Store

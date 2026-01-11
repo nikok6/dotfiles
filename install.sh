@@ -23,7 +23,7 @@ else
 fi
 
 echo "Downloading $BINARY..."
-curl -fsSL "https://github.com/nikok6/dotfiles/releases/latest/download/$BINARY" -o ~/.claude/statusline
+curl -fsSL "https://github.com/nikok6/claude-statusline/releases/latest/download/$BINARY" -o ~/.claude/statusline
 chmod +x ~/.claude/statusline
 STATUSLINE_CMD="~/.claude/statusline"
 
