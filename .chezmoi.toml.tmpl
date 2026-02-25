@@ -1,0 +1,11 @@
+{{- $machineType := "" -}}
+{{- if env "REMOTE_CONTAINERS" -}}
+{{-   $machineType = "devcontainer" -}}
+{{- else if eq .chezmoi.os "darwin" -}}
+{{-   $machineType = promptStringOnce . "machineType" "Machine type (work/personal)" -}}
+{{- else -}}
+{{-   $machineType = "linux" -}}
+{{- end -}}
+
+[data]
+  machineType = {{ $machineType | quote }}
