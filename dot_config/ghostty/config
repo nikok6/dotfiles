@@ -1,0 +1,18 @@
+# Theme
+theme = light:Catppuccin Latte,dark:Catppuccin Mocha
+
+# Font
+font-family = JetBrains Mono
+font-size = 13
+
+# Window
+macos-titlebar-style = tabs
+
+# Background blur
+unfocused-split-opacity = 0.8
+background-opacity = 0.85
+background-blur-radius = 20
+
+# Padding
+window-padding-x = 20
+window-padding-y = 15
