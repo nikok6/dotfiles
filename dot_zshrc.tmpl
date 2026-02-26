@@ -29,9 +29,12 @@ fi
 # Devcontainer aliases
 devcexec() { devcontainer exec --workspace-folder . "$@" }
 alias devczsh='devcexec zsh'
-alias devcopen='devcontainer up --workspace-folder . --dotfiles-repository https://github.com/nikok6/dotfiles'
+alias devcup='devcontainer up --workspace-folder . --dotfiles-repository https://github.com/nikok6/dotfiles --mount "source=${HOME}/.aws,target=/root/.aws,type=bind"'
 alias devcstop='docker stop $(docker ps -q --filter "label=devcontainer.local_folder=$(pwd)")'
+alias devcdown='docker rm -f $(docker ps -aq --filter "label=devcontainer.local_folder=$(pwd)")'
+alias devcstatus='docker ps --filter "label=devcontainer.local_folder=$(pwd)" --format "{{`{{.Names}}`}}\t{{`{{.Status}}`}}"'
 alias devcrebuild='devcontainer rebuild --workspace-folder .'
+
 {{ end -}}
 
 {{ if eq .machineType "devcontainer" -}}
