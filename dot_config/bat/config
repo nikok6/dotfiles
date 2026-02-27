@@ -1,0 +1,3 @@
+--theme="TwoDark"
+--style="numbers,changes"
+--map-syntax="*.env:Bourne Again Shell (bash)"

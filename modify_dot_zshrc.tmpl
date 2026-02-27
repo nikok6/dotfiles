@@ -1,11 +1,27 @@
+#!/bin/bash
+{{ if eq .machineType "devcontainer" -}}
+# In devcontainer: keep existing .zshrc and append our config
+cat
+cat <<'CHEZMOI_APPEND'
+
+# --- chezmoi managed ---
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+source $ZSH/oh-my-zsh.sh
+export TERM=xterm-256color
+alias reload='source ~/.zshrc'
+alias cc="claude"
+alias ccc="claude -c"
+alias ccr="claude -r"
+CHEZMOI_APPEND
+{{ else -}}
+# On other machines: replace .zshrc entirely
+cat <<'CHEZMOI_REPLACE'
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="refined"
 
-{{ if eq .machineType "devcontainer" -}}
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
-{{ else if eq .machineType "work" -}}
+{{ if eq .machineType "work" -}}
 plugins=(git docker zsh-autosuggestions zsh-syntax-highlighting)
 {{ else -}}
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
@@ -27,22 +43,18 @@ else
 fi
 
 # Devcontainer aliases
-devcexec() { devcontainer exec --workspace-folder . "$@" }
-alias devczsh='devcexec zsh'
+devcrun() { devcontainer exec --workspace-folder . "$@" }
+alias devczsh='devcrun zsh'
 alias devcup='devcontainer up --workspace-folder . --dotfiles-repository https://github.com/nikok6/dotfiles --mount "source=${HOME}/.aws,target=/root/.aws,type=bind"'
 alias devcstop='docker stop $(docker ps -q --filter "label=devcontainer.local_folder=$(pwd)")'
-alias devcdown='docker rm -f $(docker ps -aq --filter "label=devcontainer.local_folder=$(pwd)")'
-alias devcstatus='docker ps --filter "label=devcontainer.local_folder=$(pwd)" --format "{{`{{.Names}}`}}\t{{`{{.Status}}`}}"'
-alias devcrebuild='devcontainer rebuild --workspace-folder .'
+alias devcrm='docker rm -f $(docker ps -aq --filter "label=devcontainer.local_folder=$(pwd)")'
+alias devcst='docker ps --filter "label=devcontainer.local_folder=$(pwd)" --format "{{.Names}}\t{{.Status}}"'
+alias devcrb='devcontainer rebuild --workspace-folder .'
 
-{{ end -}}
-
-{{ if eq .machineType "devcontainer" -}}
-export TERM=xterm-256color
 {{ end -}}
 
 # Consolidated PATH
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"
 
 # zoxide (smarter cd)
 eval "$(zoxide init zsh)"
@@ -52,10 +64,12 @@ alias ls='eza --icons'
 alias ll='eza -l --icons'
 alias la='eza -la --icons'
 
-{{ if ne .machineType "devcontainer" -}}
+# bat (better cat)
+alias cat='bat'
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+
 # Unlock keychain
 alias unlock='security unlock-keychain'
-{{ end -}}
 
 # Reload zsh config
 alias reload='source ~/.zshrc'
@@ -64,3 +78,5 @@ alias reload='source ~/.zshrc'
 alias cc="claude"
 alias ccc="claude -c"
 alias ccr="claude -r"
+CHEZMOI_REPLACE
+{{ end -}}
