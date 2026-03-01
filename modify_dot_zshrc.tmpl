@@ -46,7 +46,15 @@ fi
 # Devcontainer aliases
 devcrun() { devcontainer exec --workspace-folder . "$@" }
 alias devczsh='devcrun zsh'
-alias devcup='devcontainer up --workspace-folder . --dotfiles-repository https://github.com/nikok6/dotfiles --mount "source=${HOME}/.aws,target=/root/.aws,type=bind"'
+devcup() {
+  local running=$(docker ps -q --filter "label=devcontainer.local_folder=$(pwd)")
+  if [ -n "$running" ]; then
+    echo "Devcontainer already running:"
+    devcst
+  else
+    devcontainer up --workspace-folder . --dotfiles-repository https://github.com/nikok6/dotfiles --mount "source=${HOME}/.aws,target=/root/.aws,type=bind"
+  fi
+}
 alias devcstop='docker stop $(docker ps -q --filter "label=devcontainer.local_folder=$(pwd)")'
 alias devcrm='docker rm -f $(docker ps -aq --filter "label=devcontainer.local_folder=$(pwd)")'
 alias devcst='docker ps --filter "label=devcontainer.local_folder=$(pwd)" --format "{{.Names}}\t{{.Status}}"'
@@ -54,8 +62,9 @@ alias devcrb='devcontainer rebuild --workspace-folder .'
 
 {{ end -}}
 
-# Consolidated PATH
-export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"
+# Consolidated PATH (guarded to avoid duplicates on reload)
+[[ ":$PATH:" != *":$HOME/.bun/bin:"* ]] && export PATH="$HOME/.bun/bin:$PATH"
+[[ ":$PATH:" != *":$HOME/.local/bin:"* ]] && export PATH="$HOME/.local/bin:$PATH"
 
 # zoxide (smarter cd)
 eval "$(zoxide init zsh)"
