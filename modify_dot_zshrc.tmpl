@@ -52,12 +52,12 @@ devcup() {
     echo "Devcontainer already running:"
     devcst
   else
-    devcontainer up --workspace-folder . --dotfiles-repository https://github.com/nikok6/dotfiles --mount "source=${HOME}/.aws,target=/root/.aws,type=bind"
+    devcontainer up --workspace-folder . --dotfiles-repository https://github.com/nikok6/dotfiles --mount "type=bind,source=${HOME}/.aws,target=/root/.aws"
   fi
 }
 alias devcstop='docker stop $(docker ps -q --filter "label=devcontainer.local_folder=$(pwd)")'
 alias devcrm='docker rm -f $(docker ps -aq --filter "label=devcontainer.local_folder=$(pwd)")'
-alias devcst='docker ps --filter "label=devcontainer.local_folder=$(pwd)" --format "{{.Names}}\t{{.Status}}"'
+alias devcst='docker ps --filter "label=devcontainer.local_folder=$(pwd)" --format "{{ "{{.Names}}" }}\t{{ "{{.Status}}" }}"'
 alias devcrb='devcontainer rebuild --workspace-folder .'
 
 {{ end -}}

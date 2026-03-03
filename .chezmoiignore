@@ -1,0 +1,3 @@
+{{- if ne .machineType "devcontainer" }}
+.docker/config.json
+{{- end }}
