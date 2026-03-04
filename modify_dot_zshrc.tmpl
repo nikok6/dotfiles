@@ -9,6 +9,7 @@ ZSH_THEME="refined"
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 export TERM=xterm-256color
+export COLORTERM=truecolor
 alias reload='source ~/.zshrc'
 alias cc="claude"
 alias ccc="claude -c"
@@ -61,6 +62,8 @@ alias devcst='docker ps --filter "label=devcontainer.local_folder=$(pwd)" --form
 alias devcrb='devcontainer rebuild --workspace-folder .'
 
 {{ end -}}
+
+export COLORTERM=truecolor
 
 # Consolidated PATH (guarded to avoid duplicates on reload)
 [[ ":$PATH:" != *":$HOME/.bun/bin:"* ]] && export PATH="$HOME/.bun/bin:$PATH"
