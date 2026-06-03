@@ -11,6 +11,8 @@ source $ZSH/oh-my-zsh.sh
 export TERM=xterm-256color
 export COLORTERM=truecolor
 alias reload='source ~/.zshrc'
+gcs() { git checkout "$1" && git pull; }
+gls() { local stashed=0; git diff --quiet HEAD || { git stash push && stashed=1; }; git pull; [ "$stashed" -eq 1 ] && git stash pop; }
 alias cc="claude"
 alias ccc="claude -c"
 alias ccr="claude -r"
@@ -86,6 +88,17 @@ alias unlock='security unlock-keychain'
 
 # Reload zsh config
 alias reload='source ~/.zshrc'
+
+# Git: checkout a branch and pull (gco + gl)
+gcs() { git checkout "$1" && git pull; }
+
+# Git: stash, pull, then pop the stash we just made (skips pop if nothing was stashed)
+gls() {
+  local stashed=0
+  git diff --quiet HEAD || { git stash push && stashed=1; }
+  git pull
+  [ "$stashed" -eq 1 ] && git stash pop
+}
 
 # Claude Code aliases
 alias cc="claude"
