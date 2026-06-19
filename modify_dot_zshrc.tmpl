@@ -49,14 +49,21 @@ fi
 # Devcontainer aliases
 devcrun() { devcontainer exec --workspace-folder . "$@" }
 alias devczsh='devcrun zsh'
+# Open the current repo's devcontainer in VS Code (same as "Reopen in Container")
 devcup() {
-  local running=$(docker ps -q --filter "label=devcontainer.local_folder=$(pwd)")
-  if [ -n "$running" ]; then
-    echo "Devcontainer already running:"
-    devcst
-  else
-    devcontainer up --workspace-folder . --dotfiles-repository https://github.com/nikok6/dotfiles --mount "type=bind,source=${HOME}/.aws,target=/root/.aws"
-  fi
+  local host="$PWD"
+  local cfg="$host/.devcontainer/devcontainer.json"
+  local ws="${1:-/workspaces/$(basename "$host")}"
+  [ -f "$cfg" ] || { echo "no $cfg" >&2; return 1; }
+  local hex
+  hex=$(python3 -c '
+import json,sys,binascii
+host,cfg=sys.argv[1],sys.argv[2]
+obj={"hostPath":host,"localDocker":False,"settings":{"context":"desktop-linux"},
+     "configFile":{"$mid":1,"fsPath":cfg,"external":"file://"+cfg,"path":cfg,"scheme":"file"}}
+sys.stdout.write(binascii.hexlify(json.dumps(obj,separators=(",",":")).encode()).decode())
+' "$host" "$cfg")
+  code --folder-uri "vscode-remote://dev-container+${hex}${ws}"
 }
 alias devcstop='docker stop $(docker ps -q --filter "label=devcontainer.local_folder=$(pwd)")'
 alias devcrm='docker rm -f $(docker ps -aq --filter "label=devcontainer.local_folder=$(pwd)")'
