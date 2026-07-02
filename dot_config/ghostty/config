@@ -16,3 +16,6 @@ background-blur-radius = 20
 # Padding
 window-padding-x = 20
 window-padding-y = 15
+
+# Custom icon
+macos-icon = xray
