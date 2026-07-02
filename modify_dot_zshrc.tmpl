@@ -81,6 +81,9 @@ export COLORTERM=truecolor
 # zoxide (smarter cd)
 eval "$(zoxide init zsh)"
 
+# fzf (fuzzy finder): Ctrl-R history, Ctrl-T file picker, Alt-C cd
+source <(fzf --zsh)
+
 # eza (modern ls)
 alias ls='eza --icons'
 alias ll='eza -l --icons'
