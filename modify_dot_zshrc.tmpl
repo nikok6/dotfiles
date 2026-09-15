@@ -52,7 +52,7 @@ alias devczsh='devcrun zsh'
 # Bring the current repo's devcontainer up HEADLESSLY (no VS Code). Main entrypoint.
 devcup() {
   [ -f "$PWD/.devcontainer/devcontainer.json" ] || { echo "no .devcontainer/devcontainer.json" >&2; return 1; }
-  devcontainer up --workspace-folder . || return
+  devcontainer up --workspace-folder . --dotfiles-repository https://github.com/nikok6/dotfiles.git || return
   # VS Code injects a docker credential helper (credsStore) that is absent when running
   # headless, which breaks `docker` inside the container (e.g. `make build.out`). Strip it.
   devcontainer exec --workspace-folder . python3 -c "import json,os; p='/root/.docker/config.json'; d=(json.load(open(p)) if os.path.exists(p) else {}); d.pop('credsStore',None); open(p,'w').write(json.dumps(d))" 2>/dev/null
