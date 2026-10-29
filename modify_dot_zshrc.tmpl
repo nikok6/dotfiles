@@ -52,7 +52,10 @@ alias devczsh='devcrun zsh'
 # Bring the current repo's devcontainer up HEADLESSLY (no VS Code). Main entrypoint.
 devcup() {
   [ -f "$PWD/.devcontainer/devcontainer.json" ] || { echo "no .devcontainer/devcontainer.json" >&2; return 1; }
-  devcontainer up --workspace-folder . --dotfiles-repository https://github.com/nikok6/dotfiles.git || return
+  # VS Code mounts the shared `vscode` volume at /vscode; the headless CLI doesn't, and
+  # slice-dev-env's .bashrc relies on it (claude/codex/gh state shared across containers).
+  devcontainer up --workspace-folder . --mount "type=volume,source=vscode,target=/vscode" \
+    --dotfiles-repository https://github.com/nikok6/dotfiles.git "$@" || return
   # VS Code injects a docker credential helper (credsStore) that is absent when running
   # headless, which breaks `docker` inside the container (e.g. `make build.out`). Strip it.
   devcontainer exec --workspace-folder . python3 -c "import json,os; p='/root/.docker/config.json'; d=(json.load(open(p)) if os.path.exists(p) else {}); d.pop('credsStore',None); open(p,'w').write(json.dumps(d))" 2>/dev/null
@@ -78,7 +81,7 @@ sys.stdout.write(binascii.hexlify(json.dumps(obj,separators=(",",":")).encode())
 alias devcstop='docker stop $(docker ps -q --filter "label=devcontainer.local_folder=$(pwd)")'
 alias devcrm='docker rm -f $(docker ps -aq --filter "label=devcontainer.local_folder=$(pwd)")'
 alias devcst='docker ps --filter "label=devcontainer.local_folder=$(pwd)" --format "{{ "{{.Names}}" }}\t{{ "{{.Status}}" }}"'
-alias devcrb='devcontainer rebuild --workspace-folder .'
+devcrb() { devcup --remove-existing-container "$@" }
 
 {{ end -}}
 
