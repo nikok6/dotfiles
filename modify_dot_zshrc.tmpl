@@ -16,6 +16,10 @@ gls() { local stashed=0; git diff --quiet HEAD || { git stash push && stashed=1;
 alias cc="claude"
 alias ccc="claude -c"
 alias ccr="claude -r"
+alias cch="claude --model haiku"
+alias ccs="claude --model sonnet"
+alias cco="claude --model opus"
+alias ccf="claude --model fable"
 CHEZMOI_APPEND
 {{ else -}}
 # On other machines: replace .zshrc entirely
@@ -127,5 +131,9 @@ gls() {
 alias cc="claude"
 alias ccc="claude -c"
 alias ccr="claude -r"
+alias cch="claude --model haiku"
+alias ccs="claude --model sonnet"
+alias cco="claude --model opus"
+alias ccf="claude --model fable"
 CHEZMOI_REPLACE
 {{ end -}}
