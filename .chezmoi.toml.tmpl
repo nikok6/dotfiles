@@ -1,5 +1,6 @@
 {{- $machineType := "" -}}
-{{- if env "REMOTE_CONTAINERS" -}}
+{{- /* VS Code sets REMOTE_CONTAINERS; the headless devcontainer CLI (devcup) doesn't. */ -}}
+{{- if or (env "REMOTE_CONTAINERS") (stat "/.dockerenv") -}}
 {{-   $machineType = "devcontainer" -}}
 {{- else if eq .chezmoi.os "darwin" -}}
 {{-   $machineType = promptStringOnce . "machineType" "Machine type (work/personal)" -}}

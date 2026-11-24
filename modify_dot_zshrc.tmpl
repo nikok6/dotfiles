@@ -20,6 +20,8 @@ alias cch="claude --model haiku"
 alias ccs="claude --model sonnet"
 alias cco="claude --model opus"
 alias ccf="claude --model fable"
+# Rex terminals start in $HOME; start in the repo instead, like devczsh does.
+[[ -n $REX_BLOCK && $PWD == $HOME ]] && for d in /workspaces/*(N/); do cd "$d"; break; done
 CHEZMOI_APPEND
 {{ else -}}
 # On other machines: replace .zshrc entirely
