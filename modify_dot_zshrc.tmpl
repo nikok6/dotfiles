@@ -123,6 +123,10 @@ alias unlock='security unlock-keychain'
 # Reload zsh config
 alias reload='source ~/.zshrc'
 
+# Flush the macOS DNS cache, e.g. when a recreated devcontainer's rex-<repo> host
+# still resolves to the old container's Tailscale IP
+alias flushdns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
+
 # Git: checkout a branch and pull (gco + gl)
 gcol() { git checkout "$1" && git pull; }
 
